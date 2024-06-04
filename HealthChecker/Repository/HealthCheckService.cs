@@ -40,6 +40,7 @@ namespace HealthChecker.Repository
                 return server;
             }).ToArray();
 
+            //health check calls in parallel
             var results = await Task.WhenAll(tasks).ConfigureAwait(false);
             return results.ToList();
         }

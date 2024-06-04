@@ -52,5 +52,12 @@ namespace HealthChecker.Services
                 await Task.Delay(5, stoppingToken); // runs every 5 minutes
             }
         }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("HealthCheckBackgroundService is stopping.");
+            await base.StopAsync(stoppingToken);
+            _logger.LogInformation("HealthCheckBackgroundService has stopped.");
+        }
     }
 }
