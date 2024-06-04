@@ -104,8 +104,16 @@ namespace HealthChecker.GraphQL
             Name = "Query";
 
 
-            Func<ResolveFieldContext, string, object> serverResolver = (context, id) => this.servers;
+            Func<ResolveFieldContext, string, object> serverResolver = (context, id) =>
+            {
+                if (id is null)
+                {
+                    return this.servers; 
+                }
 
+                var filteredServers = this.servers.Where(s => s.Id == id).ToList();
+                return filteredServers;
+            };
             FieldDelegate<ListGraphType<ServerType>>(
                 "servers",
                 arguments: new QueryArguments(
