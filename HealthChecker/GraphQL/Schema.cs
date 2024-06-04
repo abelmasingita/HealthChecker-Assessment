@@ -104,20 +104,38 @@ namespace HealthChecker.GraphQL
             Name = "Query";
 
 
-            Func<ResolveFieldContext, string, object> serverResolver = (context, id) =>
+            Func<ResolveFieldContext, string, string, object> serverResolver = (context, id, status) =>
             {
-                if (id is null)
-                {
-                    return this.servers; 
-                }
 
-                var filteredServers = this.servers.Where(s => s.Id == id).ToList();
-                return filteredServers;
+                if (id != null && status != null)
+                {
+                    // Filter servers that match both the id and status
+                    var filteredServers = this.servers.Where(s => s.Id == id && s.Status == status).ToList();
+                    return filteredServers;
+                }
+                else if (id != null)
+                {
+                    // Filter servers by id
+                    var filteredServersById = this.servers.Where(s => s.Id == id).ToList();
+                    return filteredServersById;
+                }
+                else if (status != null)
+                {
+                    // Filter servers by status
+                    var filteredServersByStatus = this.servers.Where(s => s.Status == status).ToList();
+                    return filteredServersByStatus;
+                }
+                else
+                {
+                    return this.servers;
+                }
             };
+
             FieldDelegate<ListGraphType<ServerType>>(
                 "servers",
                 arguments: new QueryArguments(
-                    new QueryArgument<StringGraphType> { Name = "id", Description = "id of server" }
+                    new QueryArgument<StringGraphType> { Name = "id", Description = "ID of the server to retrieve" },
+                    new QueryArgument<StringGraphType> { Name = "status", Description = "Status of the server to filter by" }
                 ),
                 resolve: serverResolver
             );
