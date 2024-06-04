@@ -47,6 +47,7 @@ namespace HealthChecker
             services.AddSingleton(servers);
             services.AddSingleton<IHealthCheckService, HealthCheckService>();
             services.AddSingleton<ErrorDetailType>();
+            services.AddSingleton<DisableServerInputType>();
             services.AddSingleton<HealthCheckerMutation>();
             services.AddSingleton<HealthCheckerQuery>();
             services.AddRazorPages();

@@ -8,6 +8,8 @@ namespace HealthCheckServer.Models
         public string ServerId { get; set; }
         public string Status { get; set; }
         public DateTime LastTimeUp { get; set; }
+        public bool Disabled { get; set; } = false;
+
     }
 
 }

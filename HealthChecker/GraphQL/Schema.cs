@@ -137,9 +137,10 @@ namespace HealthChecker.GraphQL
         public HealthCheckerSchema(IServiceProvider provider, List<Server> servers) : base(provider)
         {
             Query = new HealthCheckerQuery(servers);
-            //Mutation = new HealthCheckerMutation(servers);
+            Mutation = new HealthCheckerMutation(servers);
             RegisterType<ErrorDetailType>();
             RegisterType<ServerType>();
+            RegisterType<DisableServerInputType>();
         }
     }
 
