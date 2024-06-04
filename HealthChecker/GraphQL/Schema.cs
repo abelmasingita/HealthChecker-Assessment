@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GraphQL;
 using GraphQL.Types;
 using HealthChecker.Repository;
+using static HealthChecker.GraphQL.ServerType;
 
 namespace HealthChecker.GraphQL
 {
@@ -118,6 +119,12 @@ namespace HealthChecker.GraphQL
                 resolve: context => "world"
             );
         }
+
+        //return the servers
+        public List<Server> GetServers()
+        {
+            return servers;
+        }
     }
 
     public class HealthCheckerSchema : Schema
@@ -125,6 +132,8 @@ namespace HealthChecker.GraphQL
         public HealthCheckerSchema(IServiceProvider provider) : base(provider)
         {
             Query = new HealthCheckerQuery();
+            RegisterType<ErrorDetailType>();
+            RegisterType<ServerType>();
         }
     }
 }

@@ -16,6 +16,7 @@ using System.Threading;
 using System;
 using HealthChecker.Repository;
 using static HealthChecker.GraphQL.ServerType;
+using HealthChecker.Services;
 
 namespace HealthChecker
 {
@@ -40,6 +41,7 @@ namespace HealthChecker
             services.AddSingleton<ServerType>();
 
             services.AddSingleton<HealthCheckerSchema, HealthCheckerSchema>();
+            services.AddHostedService<HealthCheckBackgroundService>();
 
             services.AddGraphQL(options =>
             {

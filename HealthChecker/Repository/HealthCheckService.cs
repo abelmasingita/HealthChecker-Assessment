@@ -1,5 +1,8 @@
 ﻿using HealthChecker.GraphQL;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -8,11 +11,49 @@ namespace HealthChecker.Repository
     public class HealthCheckService : IHealthCheckService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-
-        public HealthCheckService(IHttpClientFactory httpClientFactory)
+        private readonly ILogger<HealthCheckService> _logger;
+        public HealthCheckService(IHttpClientFactory httpClientFactory, ILogger<HealthCheckService> logger)
         {
             _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
+
+        //public async Task<List<Server>> CheckAllHealthAsync(List<Server> servers)
+        //{
+        //    var tasks = servers.Select(async server =>
+        //    {
+        //        try
+        //        {
+        //            var (status, error, lastTimeUp) = await CheckHealthAsync(server.HealthCheckUri).ConfigureAwait(false);
+        //            server.Status = status;
+        //            server.Error = error;
+        //            server.LastTimeUp = lastTimeUp;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            _logger.LogError(ex, "Error checking health for server {Server}", server.Name);
+        //            server.Status = "DOWN";
+        //            server.Error = new ErrorDetail { Status = 500, Body = ex.Message };
+        //            server.LastTimeUp = null;
+        //        }
+
+        //        return server;
+        //    }).ToArray();
+
+        //    try
+        //    {
+        //        return await Task.WhenAll(tasks).ConfigureAwait(false);
+        //    }
+        //    catch (AggregateException ae)
+        //    {
+        //        // Handle aggregate exception if needed
+        //        foreach (var innerEx in ae.InnerExceptions)
+        //        {
+        //            _logger.LogError(innerEx, "An error occurred while checking health for one or more servers");
+        //        }
+        //        return new List<Server>(); 
+        //    }
+        //}
 
         public async Task<(string Status, ErrorDetail Error, DateTime? LastTimeUp)> CheckHealthAsync(string url)
         {
