@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using HealthChecker.Repository;
@@ -7,7 +8,6 @@ using static HealthChecker.GraphQL.ServerType;
 
 namespace HealthChecker.GraphQL
 {
-
     public class Server
     {
         public string Id { get; set; }
@@ -120,11 +120,6 @@ namespace HealthChecker.GraphQL
             );
         }
 
-        //return the servers
-        public List<Server> GetServers()
-        {
-            return servers;
-        }
     }
 
     public class HealthCheckerSchema : Schema

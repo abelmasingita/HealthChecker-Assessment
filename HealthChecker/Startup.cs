@@ -17,6 +17,8 @@ using System;
 using HealthChecker.Repository;
 using static HealthChecker.GraphQL.ServerType;
 using HealthChecker.Services;
+using Microsoft.EntityFrameworkCore;
+using HealthCheckServer.EF_Core;
 
 namespace HealthChecker
 {
@@ -50,6 +52,10 @@ namespace HealthChecker
                 //var logger = provider.GetRequiredService<ILogger<Startup>>();
                 //options.UnhandledExceptionDelegate = ctx => logger.LogError("{Error} occured", ctx.OriginalException.Message);
             }).AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
+
+            //Add DbContext
+            string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContextPool<Context>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
 
         }
 
