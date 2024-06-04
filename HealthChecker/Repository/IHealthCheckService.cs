@@ -8,7 +8,7 @@ namespace HealthChecker.Repository
     public interface IHealthCheckService
     {
         Task<(string Status, ErrorDetail Error, DateTime? LastTimeUp)> CheckHealthAsync(string url);
-        //Task<List<Server>> CheckAllHealthAsync(List<Server> servers);
+        Task<List<Server>> CheckAllHealthAsync(List<Server> servers);
 
     }
 }

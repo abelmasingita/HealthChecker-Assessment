@@ -38,15 +38,19 @@ namespace HealthChecker.Services
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            using (var scope = _serviceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var healthCheckService = scope.ServiceProvider.GetRequiredService<IHealthCheckService>();
-                //var updatedServers = await healthCheckService.CheckAllHealthAsync(servers);
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var healthCheckService = scope.ServiceProvider.GetRequiredService<IHealthCheckService>();
+                    var updatedServers = await healthCheckService.CheckAllHealthAsync(servers);
 
-                _logger.LogInformation("Health check completed at: {time}", DateTimeOffset.Now);
+                    _logger.LogInformation("Health check completed at: {time}", DateTimeOffset.Now);
+                }
+
+                //await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);//for testing
+                await Task.Delay(5, stoppingToken); // runs every 5 minutes
             }
-
-            await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
         }
     }
 }

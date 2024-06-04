@@ -18,42 +18,31 @@ namespace HealthChecker.Repository
             _logger = logger;
         }
 
-        //public async Task<List<Server>> CheckAllHealthAsync(List<Server> servers)
-        //{
-        //    var tasks = servers.Select(async server =>
-        //    {
-        //        try
-        //        {
-        //            var (status, error, lastTimeUp) = await CheckHealthAsync(server.HealthCheckUri).ConfigureAwait(false);
-        //            server.Status = status;
-        //            server.Error = error;
-        //            server.LastTimeUp = lastTimeUp;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            _logger.LogError(ex, "Error checking health for server {Server}", server.Name);
-        //            server.Status = "DOWN";
-        //            server.Error = new ErrorDetail { Status = 500, Body = ex.Message };
-        //            server.LastTimeUp = null;
-        //        }
+        public async Task<List<Server>> CheckAllHealthAsync(List<Server> servers)
+        {
+            var tasks = servers.Select(async server =>
+            {
+                try
+                {
+                    var (status, error, lastTimeUp) = await CheckHealthAsync(server.HealthCheckUri).ConfigureAwait(false);
+                    server.Status = status;
+                    server.Error = error;
+                    server.LastTimeUp = lastTimeUp;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error checking health for server {Server}", server.Name);
+                    server.Status = "DOWN";
+                    server.Error = new ErrorDetail { Status = 500, Body = ex.Message };
+                    server.LastTimeUp = null;
+                }
 
-        //        return server;
-        //    }).ToArray();
+                return server;
+            }).ToArray();
 
-        //    try
-        //    {
-        //        return await Task.WhenAll(tasks).ConfigureAwait(false);
-        //    }
-        //    catch (AggregateException ae)
-        //    {
-        //        // Handle aggregate exception if needed
-        //        foreach (var innerEx in ae.InnerExceptions)
-        //        {
-        //            _logger.LogError(innerEx, "An error occurred while checking health for one or more servers");
-        //        }
-        //        return new List<Server>(); 
-        //    }
-        //}
+            var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+            return results.ToList();
+        }
 
         public async Task<(string Status, ErrorDetail Error, DateTime? LastTimeUp)> CheckHealthAsync(string url)
         {
