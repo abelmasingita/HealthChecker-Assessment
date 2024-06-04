@@ -19,6 +19,8 @@ using static HealthChecker.GraphQL.ServerType;
 using HealthChecker.Services;
 using Microsoft.EntityFrameworkCore;
 using HealthCheckServer.EF_Core;
+using System.Collections.Generic;
+using HealthChecker.Util;
 
 namespace HealthChecker
 {
@@ -34,18 +36,23 @@ namespace HealthChecker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var serverListInstance = new ServerList();
+            var servers = serverListInstance.GetServers();
+
             services.AddHttpClient("HealthCheckClient")
                 .ConfigureHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromMinutes(4); // timeout to lower than 5 minutes
                 });
+            services.AddSingleton(servers);
             services.AddSingleton<IHealthCheckService, HealthCheckService>();
             services.AddSingleton<ErrorDetailType>();
-
+            services.AddSingleton<HealthCheckerMutation>();
+            services.AddSingleton<HealthCheckerQuery>();
             services.AddRazorPages();
 
             services.AddSingleton<ServerType>();
-
+            services.AddSingleton<ISchema>(provider => new HealthCheckerSchema(provider, servers));
             services.AddSingleton<HealthCheckerSchema, HealthCheckerSchema>();
             services.AddHostedService<HealthCheckBackgroundService>();
 

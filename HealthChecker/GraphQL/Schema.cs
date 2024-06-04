@@ -16,6 +16,7 @@ namespace HealthChecker.GraphQL
         public string Status { get; set; }
         public DateTime? LastTimeUp { get; set; }
         public ErrorDetail Error { get; set; }
+        public bool Disabled { get; set; } = false;
     }
 
     public class ErrorDetail
@@ -81,28 +82,11 @@ namespace HealthChecker.GraphQL
 
     public class HealthCheckerQuery : ObjectGraphType<object>
     {
-        private List<Server> servers = new List<Server>{
-            new Server{
-                Id = "1",
-                Name = "stackworx.io",
-                HealthCheckUri = "https://www.stackworx.io",
-            },
-            new Server{
-                Id = "2",
-                Name = "prima.run",
-                HealthCheckUri = "https://prima.run",
-            },
-            new Server{
-                Id = "3",
-                Name = "google",
-                HealthCheckUri = "https://www.google.com",
-            },
-        };
-
-        public HealthCheckerQuery()
+        private List<Server> servers;
+        public HealthCheckerQuery(List<Server> servers)
         {
+            this.servers = servers;
             Name = "Query";
-
 
             Func<ResolveFieldContext, string, string, object> serverResolver = (context, id, status) =>
             {
@@ -150,11 +134,52 @@ namespace HealthChecker.GraphQL
 
     public class HealthCheckerSchema : Schema
     {
-        public HealthCheckerSchema(IServiceProvider provider) : base(provider)
+        public HealthCheckerSchema(IServiceProvider provider, List<Server> servers) : base(provider)
         {
-            Query = new HealthCheckerQuery();
+            Query = new HealthCheckerQuery(servers);
+            //Mutation = new HealthCheckerMutation(servers);
             RegisterType<ErrorDetailType>();
             RegisterType<ServerType>();
+        }
+    }
+
+    public class DisableServerInputType : InputObjectGraphType
+    {
+        public DisableServerInputType()
+        {
+            Name = "DisableServerInput";
+            Field<NonNullGraphType<StringGraphType>>("id", "ID of the server to disable");
+        }
+    }
+    public class DisableServerInput
+    {
+        public string Id { get; set; }
+    }
+    public class HealthCheckerMutation : ObjectGraphType
+    {
+        private List<Server> servers;
+        public HealthCheckerMutation(List<Server> servers)
+        {
+            this.servers = servers;
+
+            Field<BooleanGraphType>(
+                "disableServer",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<DisableServerInputType>> { Name = "input" }
+                ),
+                resolve: context =>
+                {
+                    var input = context.GetArgument<DisableServerInput>("input");
+                    var server = servers.FirstOrDefault(s => s.Id == input.Id);
+                    if (server == null)
+                    {
+                        context.Errors.Add(new ExecutionError("Server not found."));
+                        return false;
+                    }
+                    server.Disabled = true;
+                    return true;
+                }
+            );
         }
     }
 }
