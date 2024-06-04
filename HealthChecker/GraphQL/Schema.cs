@@ -14,8 +14,15 @@ namespace HealthChecker.GraphQL
         public string HealthCheckUri { get; set; }
         public string Status { get; set; }
         public DateTime? LastTimeUp { get; set; }
-        public string Error { get; set; }
+        public ErrorDetail Error { get; set; }
     }
+
+    public class ErrorDetail
+    {
+        public int Status { get; set; }
+        public string Body { get; set; }
+    }
+
 
     public class ServerType : ObjectGraphType<Server>
     {
@@ -50,7 +57,7 @@ namespace HealthChecker.GraphQL
                 }
             );
 
-            Field<StringGraphType>(
+            Field<ErrorDetailType>(
                 "error",
                 resolve: context =>
                 {
@@ -58,6 +65,15 @@ namespace HealthChecker.GraphQL
                     return server.Error;
                 }
             );
+        }
+
+        public class ErrorDetailType : ObjectGraphType<ErrorDetail>
+        {
+            public ErrorDetailType()
+            {
+                Field(e => e.Status);
+                Field(e => e.Body);
+            }
         }
     }
 

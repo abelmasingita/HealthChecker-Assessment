@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HealthChecker.GraphQL;
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -13,7 +14,7 @@ namespace HealthChecker.Repository
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<(string Status, string Error, DateTime? LastTimeUp)> CheckHealthAsync(string url)
+        public async Task<(string Status, ErrorDetail Error, DateTime? LastTimeUp)> CheckHealthAsync(string url)
         {
             var client = _httpClientFactory.CreateClient();
             try
@@ -26,12 +27,12 @@ namespace HealthChecker.Repository
                 else
                 {
                     var errorBody = await response.Content.ReadAsStringAsync();
-                    return ("DOWN", $"Status Code: {response.StatusCode}, Body: {errorBody}", null);
+                    return ("DOWN", new ErrorDetail { Status = (int)response.StatusCode, Body = errorBody.Trim() }, null);
                 }
             }
             catch (Exception ex)
             {
-                return ("DOWN", ex.Message, null);
+                return ("DOWN", new ErrorDetail { Status = 500, Body = ex.Message }, null);
             }
         }
     }

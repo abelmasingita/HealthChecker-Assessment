@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System;
+using HealthChecker.GraphQL;
 
 namespace HealthChecker.Repository
 {
     public interface IHealthCheckService
     {
-        Task<(string Status, string Error, DateTime? LastTimeUp)> CheckHealthAsync(string url);
+        Task<(string Status, ErrorDetail Error, DateTime? LastTimeUp)> CheckHealthAsync(string url);
     }
 }
