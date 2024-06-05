@@ -66,9 +66,7 @@ namespace HealthChecker
             }).AddSystemTextJson(deserializerSettings => { }, serializerSettings => { });
 
             //Add DbContext
-            string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContextPool<Context>(options => options.UseMySql(mySqlConnectionStr, ServerVersion.AutoDetect(mySqlConnectionStr)));
-
+            services.AddDbContext<Context>(options =>options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

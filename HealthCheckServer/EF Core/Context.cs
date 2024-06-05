@@ -5,7 +5,7 @@ namespace HealthCheckServer.EF_Core
 {
     public class Context : DbContext
     {
-        public Context(DbContextOptions options) : base(options)
+        public Context(DbContextOptions<Context> options) : base(options)
         {
 
         }
